@@ -1,0 +1,93 @@
+# depslib dependency file v1.0
+1698164840 source:c:\users\jasim\documents\my company\projects\mrtheavencinema\mrtheavencinema\main.cpp
+	<iostream>
+	<mysql.h>
+
+1476062734 c:\users\jasim\documents\my company\projects\mrtheavencinema\mrtheavencinema\includes\mysql.h
+	<sys/types.h>
+	<winsock.h>
+	"mysql_com.h"
+	"mysql_time.h"
+	"mysql_version.h"
+	"typelib.h"
+	"my_list.h"
+	"my_alloc.h"
+
+1685382202 c:\users\jasim\documents\my company\projects\mrtheavencinema\mrtheavencinema\includes\winsock.h
+	<windows.h>
+	<_timeval.h>
+	<_bsd_types.h>
+	<inaddr.h>
+	<psdk_inc/_socket_types.h>
+	<psdk_inc/_fd_types.h>
+	<psdk_inc/_ip_types.h>
+	<psdk_inc/_ip_mreq1.h>
+	<psdk_inc/_wsadata.h>
+	<psdk_inc/_xmitfile.h>
+	<psdk_inc/_wsa_errnos.h>
+
+1685374938 c:\users\jasim\documents\my company\projects\mrtheavencinema\mrtheavencinema\includes\mysql_com.h
+	"binary_log_types.h"
+	"my_command.h"
+
+1685380964 c:\users\jasim\documents\my company\projects\mrtheavencinema\mrtheavencinema\includes\binary_log_types.h
+
+1685381066 c:\users\jasim\documents\my company\projects\mrtheavencinema\mrtheavencinema\includes\my_command.h
+
+1476062774 c:\users\jasim\documents\my company\projects\mrtheavencinema\mrtheavencinema\includes\mysql_time.h
+
+1476062784 c:\users\jasim\documents\my company\projects\mrtheavencinema\mrtheavencinema\includes\mysql_version.h
+	<custom_conf.h>
+
+1476062924 c:\users\jasim\documents\my company\projects\mrtheavencinema\mrtheavencinema\includes\typelib.h
+
+1476062970 c:\users\jasim\documents\my company\projects\mrtheavencinema\mrtheavencinema\includes\my_list.h
+
+1476062978 c:\users\jasim\documents\my company\projects\mrtheavencinema\mrtheavencinema\includes\my_alloc.h
+
+1698164876 source:c:\users\jasim\documents\my company\projects\mrtheavencinema\main.cpp
+	<iostream>
+	<mysql.h>
+
+1476062734 c:\users\jasim\documents\my company\projects\mrtheavencinema\includes\mysql.h
+	<sys/types.h>
+	<winsock.h>
+	"mysql_com.h"
+	"mysql_time.h"
+	"mysql_version.h"
+	"typelib.h"
+	"my_list.h"
+	"my_alloc.h"
+
+1685382202 c:\users\jasim\documents\my company\projects\mrtheavencinema\includes\winsock.h
+	<windows.h>
+	<_timeval.h>
+	<_bsd_types.h>
+	<inaddr.h>
+	<psdk_inc/_socket_types.h>
+	<psdk_inc/_fd_types.h>
+	<psdk_inc/_ip_types.h>
+	<psdk_inc/_ip_mreq1.h>
+	<psdk_inc/_wsadata.h>
+	<psdk_inc/_xmitfile.h>
+	<psdk_inc/_wsa_errnos.h>
+
+1685374938 c:\users\jasim\documents\my company\projects\mrtheavencinema\includes\mysql_com.h
+	"binary_log_types.h"
+	"my_command.h"
+
+1685380964 c:\users\jasim\documents\my company\projects\mrtheavencinema\includes\binary_log_types.h
+
+1685381066 c:\users\jasim\documents\my company\projects\mrtheavencinema\includes\my_command.h
+
+1476062774 c:\users\jasim\documents\my company\projects\mrtheavencinema\includes\mysql_time.h
+
+1476062784 c:\users\jasim\documents\my company\projects\mrtheavencinema\includes\mysql_version.h
+	<custom_conf.h>
+
+1476062924 c:\users\jasim\documents\my company\projects\mrtheavencinema\includes\typelib.h
+
+1476062970 c:\users\jasim\documents\my company\projects\mrtheavencinema\includes\my_list.h
+
+1476062978 c:\users\jasim\documents\my company\projects\mrtheavencinema\includes\my_alloc.h
+
