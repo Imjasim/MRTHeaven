@@ -9,13 +9,18 @@
 #include<conio.h>
 #include<windows.h>
 #include<mysql.h>
+#include <vector>
+//#include <termios.h>
+//#include <unistd.h>
 using namespace std;
 
 // Global Variable Movie Ticket Booking System in C++ with MySQL
 int qstate, qstate2;
 MYSQL* conn;
-MYSQL_ROW row;
+MYSQL_ROW row, row2;
 MYSQL_RES* res;
+MYSQL_RES* res2;
+int user_id;
 // Global Variable End
 
 
@@ -50,8 +55,11 @@ public:
 };
 
 void Welcome() {
-    cout << "Welcome To MRTHeaven Ticket Booking System" << endl << endl;
-    cout << "Menu" << endl;
+    cout << "********************************************" << endl;
+    cout << "*                                          *" << endl;
+    cout << "*       Welcome to MRTCINEMA HEAVEN        *" << endl;
+    cout << "*                                          *" << endl;
+    cout << "********************************************" << endl;
 }
 
 
@@ -65,6 +73,10 @@ void AddNewShowTime();
 void ShowShowtimeList();
 void RegisterUser();
 void LoginUser();
+void loginMenu();
+void customerMenu ();
+void adminMenu();
+void BookTicket();
 
 
 int main()
@@ -80,21 +92,67 @@ int main()
     // Call Methods End
 
     // Variables
-    int chooseOneFromMenu = 0;
-    char exitSurity;
-    int num = 1;
-    int fin = 0;
+
     // Variables End
 
     Welcome();
-    for (int i = 0; i < 1; i++) {
+    loginMenu();
+    return 0;
+}
+void loginMenu() {
+int chooseOneFromMenu = 0;
+char exitSurity;
+int num = 1;
+int fin = 0;
+      for (int i = 0; i < 1; i++) {
         fin = num;
-        cout << fin << ". Book Ticket" << endl;
+        cout << fin << ". Login User" << endl;
         fin += num;
-        cout << fin << ". Show My Ticket" << endl;
+        cout << fin << ". Register" << endl;
         fin += num;
-        cout << fin << ". Check Seat" << endl;
-        fin += num;
+        cout << fin << ". Exit" << endl;
+        cout << "Choose One: ";
+    }
+    cin >> chooseOneFromMenu;
+
+    switch (chooseOneFromMenu)
+    {
+    case 1:
+        LoginUser();
+        break;
+    case 2:
+        RegisterUser();
+        break;
+    case 3:
+        ExitProgram:
+        cout << "Program terminating. Are you sure? (y/N): ";
+        cin >> exitSurity;
+        if (exitSurity == 'y' || exitSurity == 'Y') {
+            exit(0);
+        }else if (exitSurity == 'n' || exitSurity == 'N') {
+            system("cls");
+            main();
+        }else {
+            cout << "Next time choose after read the corresponding line." << endl;
+            goto ExitProgram;
+        }
+        break;
+    default:
+        cout << "Please choose between 1 - 3. Press Enter To Continue...";
+        getch();
+        system("cls");
+        main();
+        break;
+    }
+}
+void adminMenu(){
+int chooseOneFromMenu = 0;
+char exitSurity;
+int num = 1;
+int fin = 0;
+Welcome();
+     for (int i = 0; i < 1; i++) {
+        fin = num;
         cout << fin << ". Add New Movie" << endl;
         fin += num;
         cout << fin << ". Edit Movie" << endl;
@@ -119,44 +177,35 @@ int main()
     switch (chooseOneFromMenu)
     {
     case 1:
-        /*BookTicket();*/
-        break;
-    case 2:
-        /*ShowMyTicket();*/
-        break;
-    case 3:
-        /*CheckSeat();*/
-        break;
-    case 4:
         AddNewMovie();
         break;
-    case 5:
+    case 2:
         EditMovie();
         break;
-    case 6:
+    case 3:
         DeleteMovie();
         break;
-    case 7:
+    case 4:
         ShowMovieList();
         break;
-    case 8:
+    case 5:
         AddNewShowTime();
         break;
-    case 9:
+    case 6:
         ShowShowtimeList();
         break;
-    case 10:
+    case 7:
         RegisterUser();
         break;
-    case 11:
+    case 8:
         LoginUser();
         break;
-    case 12:
+    case 9:
         ExitProgram:
         cout << "Program terminating. Are you sure? (y/N): ";
         cin >> exitSurity;
         if (exitSurity == 'y' || exitSurity == 'Y') {
-            return 0;
+            exit(0);
         }else if (exitSurity == 'n' || exitSurity == 'N') {
             system("cls");
             main();
@@ -166,14 +215,393 @@ int main()
         }
         break;
     default:
-        cout << "Please choose between 1 - 7. Press Enter To Continue...";
+        cout << "Please choose between 1 - 9. Press Enter To Continue...";
         getch();
         system("cls");
         main();
         break;
     }
-    return 0;
 }
+void customerMenu(){
+int chooseOneFromMenu = 0;
+char exitSurity;
+int num = 1;
+int fin = 0;
+Welcome();
+      for (int i = 0; i < 1; i++) {
+        fin = num;
+        cout << fin << ". Book Ticket" << endl;
+        fin += num;
+        cout << fin << ". Show My Ticket" << endl;
+        fin += num;
+        cout << fin << ". Check Seat" << endl;
+        fin += num;
+        cout << fin << ". Exit" << endl;
+        cout << "Choose One: ";
+    }
+    cin >> chooseOneFromMenu;
+
+    switch (chooseOneFromMenu)
+    {
+    case 1:
+        BookTicket();
+        break;
+    case 2:
+        /*ShowMyTicket();*/
+        break;
+    case 3:
+        /*CheckSeat();*/
+        break;
+    case 4:
+        ExitProgram:
+        cout << "Program terminating. Are you sure? (y/N): ";
+        cin >> exitSurity;
+        if (exitSurity == 'y' || exitSurity == 'Y') {
+            exit(0);
+        }else if (exitSurity == 'n' || exitSurity == 'N') {
+            system("cls");
+            main();
+        }else {
+            cout << "Next time choose after read the corresponding line." << endl;
+            goto ExitProgram;
+        }
+        break;
+    default:
+        cout << "Please choose between 1 - 4. Press Enter To Continue...";
+        getch();
+        system("cls");
+        main();
+        break;
+    }
+}
+
+void BookTicket(){
+    system("cls");
+
+    // Variables
+    char choose;
+    string input;
+    int itemId, showid, numTicket, seatNum;
+    bool HaveException = false;
+    std::vector<int> ticketsBooked;
+    //int ticketsBooked[40];
+    int seatRow =5, seatColumn=9;
+    int movie_seats[seatRow][seatColumn] = {{0, 0, 0, 0, 0, 0, 0, 0, 0},
+                   {0, 0, 0, 0, 0, 0, 0, 0, 0},
+                   {0, 0, 0, 0, 0, 0, 0, 0, 0},
+                   {0, 0, 0, 0, 0, 0, 0, 0, 0},
+                   {0, 0, 0, 0, 0, 0, 0, 0, 0},};
+
+    Welcome();
+    qstate = mysql_query(conn, "select * from movie");
+    if (!qstate)
+    {
+        res = mysql_store_result(conn);
+        printf("-------------------------------------------------------------------------------------------------------------------------\n");
+        printf("| %-10s | %-15s | %-45s | %-15s | %-15s | %-15s |\n", "Id", "Title", "Description", "Duration", "Language", "Subtitle");
+        printf("-------------------------------------------------------------------------------------------------------------------------\n");
+        while ((row = mysql_fetch_row(res)))
+        {
+            printf("| %-10s | %-15s | %-45s | %-15s | %-15s | %-15s |\n", row[0], row[1], row[2], row[3], row[4], row[5]);
+            printf("-------------------------------------------------------------------------------------------------------------------------\n");
+        }
+
+    }
+    else
+    {
+        cout << "Query Execution Problem!" << mysql_errno(conn) << endl;
+    }
+
+    try
+    {
+        cout << endl;
+        cout << "Enter Movie ID: ";
+        cin >> itemId;
+        cout << endl;
+    }
+    catch (exception e)
+    {
+        cout << "Please Enter a valid ID NUMBER." << endl;
+        HaveException = true;
+        BookTicket();
+    }
+
+    Welcome();
+    stringstream streamid;
+    string movieid;
+    streamid << itemId;
+    streamid >> movieid;
+    string findbyid_query = "select a.id, b.title, a.date, c.time FROM showtime a INNER JOIN movie b ON a.movie_id = b.id  INNER JOIN time_slots c ON a.slot_id = c.id where b.id = '"+movieid+"'";
+    const char* qi = findbyid_query.c_str();
+    qstate2 = mysql_query(conn, qi);
+
+
+    if (!qstate2)
+    {
+        res = mysql_store_result(conn);
+        printf("-------------------------------------------------------------------------------------------------------------\n");
+        printf("| %-10s | %-15s | %-15s | %-15s | \n", "Id", "Title", "Date", "Time");
+        printf("-------------------------------------------------------------------------------------------------------------\n");
+        while ((row = mysql_fetch_row(res)))
+        {
+            printf("| %-10s | %-15s | %-15s | %-15s | \n", row[0], row[1], row[2], row[3]);
+        }
+        printf("-------------------------------------------------------------------------------------------------------------\n");
+    }
+    else
+    {
+        cout << "Query Execution Problem!" << mysql_errno(conn) << endl;
+    }
+
+
+    try
+    {
+        cout << endl;
+        cout << "Choose a showtime ID: ";
+        cin >> showid;
+        cout << endl;
+    }
+    catch (exception e)
+    {
+        cout << "Please Enter a valid ID NUMBER." << endl;
+        HaveException = true;
+        BookTicket();
+    }
+
+    stringstream streamid2;
+    string showTimeId;
+    streamid2 << showid;
+    streamid2 >> showTimeId;
+    cout << endl;
+    cout << "Showtime ID chosed: ";
+    cout << showTimeId;
+    cout << endl;
+
+    string findbyid_query2 = "select seat_num FROM booking where showtime_id = '"+showTimeId+"'";
+    const char* qi2 = findbyid_query2.c_str();
+    qstate = mysql_query(conn, qi2);
+
+
+    int backSeatNum, splitSeatNum, frontSeatNum;
+      if (!qstate)
+    {
+        res = mysql_store_result(conn);
+
+        cout << "res: ";
+        cout << res;
+        cout << endl;
+        row = mysql_fetch_row(res);
+        if (row != NULL)
+        {
+                int j =0;
+                printf("| %-10s | \n", row[0]);
+                stringstream SS(row[0]);
+                int booked_seat;
+                SS >> booked_seat;
+                ticketsBooked.push_back(booked_seat);
+
+                backSeatNum = (booked_seat % 10)-1;
+                splitSeatNum = booked_seat/10;
+                frontSeatNum = (splitSeatNum%10)-1;
+                movie_seats[frontSeatNum][backSeatNum] = 1;
+
+            while ((row = mysql_fetch_row(res)))
+            {
+                j++;
+                stringstream SS(row[0]);
+                int booked_seat;
+                SS >> booked_seat;
+                ticketsBooked.push_back(booked_seat);
+
+                backSeatNum = (booked_seat % 10)-1;
+                splitSeatNum = booked_seat/10;
+                frontSeatNum = (splitSeatNum%10)-1;
+                movie_seats[frontSeatNum][backSeatNum] = 1;
+            }
+        }
+        else
+        {
+
+        }
+
+        printf("-------------------------------------------------------------------------------------------------------------\n");
+        printf("| %-5s | %-5s | %-5s | %-5s | %-5s | %-5s | %-5s | %-5s | %-5s | %-5s | \n", " ","1", "2", "3", "4", "5", "6", "7", "8", "9");
+        printf("-------------------------------------------------------------------------------------------------------------\n");
+        for(int a = 0; a < seatRow; a++)
+        {
+                switch (a) {
+                  case 0:
+                    printf("| %-5s |", "A");
+                    break;
+                  case 1:
+                    printf("| %-5s |", "B");
+                    break;
+                  case 2:
+                    printf("| %-5s |", "C");
+                    break;
+                  case 3:
+                    printf("| %-5s |", "D");
+                    break;
+                  case 4:
+                    printf("| %-5s |", "E");
+                    break;
+                }
+
+            for(int b = 0; b < seatColumn; b++)
+            {
+              printf(" %-5d |", movie_seats[a][b]);
+            }
+            cout << endl;
+        }
+        printf("-------------------------------------------------------------------------------------------------------------\n");
+
+    }
+    else
+    {
+        cout << "Query Execution Problem!" << mysql_errno(conn) << endl;
+    }
+
+    try
+    {
+        cout << endl;
+        cout << "Choose number of tickets to book: ";
+        cin >> numTicket;
+        cout << endl;
+
+        if(numTicket == 0)
+        {
+             throw ("Please Enter a valid NUMBER.");
+        }
+        else if(numTicket > 10)
+        {
+             throw ("Maximum number of ticket allowed per transaction is 10");
+        }
+    }
+    catch (exception e )
+    {
+        cout << "Please Enter a valid NUMBER." << endl;
+        HaveException = true;
+    }
+    catch (char const* e )
+    {
+        cout << e << endl;
+        HaveException = true;
+        BookTicket();
+    }
+
+
+    std::vector<int> movie_seats_chosen;
+    int numSeatChosed = 0;
+    while(numSeatChosed < numTicket)
+    {
+        int backSeatNum2, frontSeatNum2;
+        char inputRowSeatNum, inputColumnSeatNum;
+        int splitSeatNum2;
+        string tempSeatNum, inputSeatNum;
+        cout << "Inside while."<< numSeatChosed << endl;
+        cout << "numTicket."<< numTicket << endl;
+        try
+        {
+            cout << endl;
+            cout << "Choose a seat number to book: ";
+            cin >> inputSeatNum;
+            cout << endl;
+
+            vector<char> c(inputSeatNum.begin(), inputSeatNum.end());
+
+            backSeatNum2 = c.at(1) - '0';
+            cout << "backSeatNum2."<< backSeatNum2 << endl;
+
+
+            switch (c.at(0)) {
+                  case 'A':
+                    frontSeatNum2 = 1;
+                    break;
+                  case 'B':
+                    frontSeatNum2 = 2;
+                    break;
+                  case 'C':
+                    frontSeatNum2 = 3;
+                    break;
+                  case 'D':
+                    frontSeatNum2 = 4;
+                    break;
+                  case 'E':
+                    frontSeatNum2 = 5;
+                    break;
+                }
+
+            string SS = std::to_string(frontSeatNum2) + std::to_string(backSeatNum2);
+            seatNum = stoi(SS);
+            cout << "seatNum."<< seatNum << endl;
+
+        int found=0;
+        for(int i = 0; i < ticketsBooked.size(); i++){
+            cout << "Already Booked seats: " << ticketsBooked.at(i) <<endl;
+             //if(ticketsBooked[i] == seatNum){
+             if(ticketsBooked.at(i) == seatNum){
+                cout << "This seat is already booked. Please select a different seat." << endl;
+                found=1;
+                 break;
+             }
+        }
+        if (found == 0 ){
+            movie_seats_chosen.push_back(seatNum);
+            numSeatChosed++;
+        }
+        }
+        catch (exception e )
+        {
+            cout << "Please Enter a valid NUMBER." << endl;
+            HaveException = true;
+        }
+        catch (char const* e )
+        {
+            cout << e << endl;
+            HaveException = true;
+        }
+
+    }
+
+
+    for(int i = 0; i < movie_seats_chosen.size(); i++)
+    {
+
+        string insert_query = "insert into booking (user_id, showtime_id, seat_num) values ('"+std::to_string(user_id)+"','"+showTimeId+"','"+std::to_string(movie_seats_chosen.at(i))+"')";
+
+        const char* q = insert_query.c_str(); // c_str converts string to constant char and this is required
+
+        qstate = mysql_query(conn, q);
+
+        if (!qstate)
+        {
+            cout << endl << "Successfully added in database." << endl;
+        }
+        else
+        {
+            cout << "Query Execution Problem!" << mysql_errno(conn) << endl;
+        }
+    }
+
+    ExitMenu:
+    cout << "Press 'm' to Menu, 'e' to another ticket and any other key to Exit: ";
+    cin >> choose;
+    if (choose == 'm' || choose == 'M')
+    {
+       system("cls");
+        customerMenu();
+    }
+    else if (choose == 'e' || choose == 'E')
+    {
+        system("cls");
+        BookTicket();
+    }
+    else
+    {
+        exit(0);
+    }
+}
+
 
 void AddNewMovie() {
 
@@ -224,7 +652,8 @@ void AddNewMovie() {
     cin >> choose;
     if (choose == 'm' || choose == 'M')
     {
-        main();
+        system("cls");
+        adminMenu();
     }
     else if (choose == 'a' || choose == 'A')
     {
@@ -327,7 +756,7 @@ void EditMovie() {
                 while (row = mysql_fetch_row(res))
                 {
                     cout << "Column ID: " << row[0] << "\nTitle: "
-                         << row[1] << "\Description: " << row[2] << "\Duration: " << row[3] << "\nLanguage: " << row[4] << "\nSubtitle: " << row[5] << endl << endl;
+                         << row[1] << "\nDescription: " << row[2] << "\nDuration: " << row[3] << "\nLanguage: " << row[4] << "\nSubtitle: " << row[5] << endl << endl;
 
                     storeid = row[0];
                     storetitle = row[1];
@@ -400,10 +829,12 @@ void EditMovie() {
     cin >> choose;
     if (choose == 'm' || choose == 'M')
     {
-        main();
+       system("cls");
+        adminMenu();
     }
     else if (choose == 'e' || choose == 'E')
     {
+        system("cls");
         EditMovie();
     }
     else
@@ -503,7 +934,8 @@ void DeleteMovie() {
     cin >> choose;
     if (choose == 'm' || choose == 'M')
     {
-        main();
+       system("cls");
+        adminMenu();
     }
     else if (choose == 'd' || choose == 'D')
     {
@@ -511,6 +943,7 @@ void DeleteMovie() {
     }
     else
     {
+        system("cls");
         exit(0);
     }
 }
@@ -528,14 +961,15 @@ void ShowMovieList() {
     if (!qstate)
     {
         res = mysql_store_result(conn);
-        printf("-------------------------------------------------------------------------------------------------------------\n");
-        printf("| %-15s | %-15s | %-15s | %-15s | %-15s | %-15s |\n", "Title", "Description", "Duration", "Language", "Subtitle");
-        printf("-------------------------------------------------------------------------------------------------------------\n");
+        printf("-------------------------------------------------------------------------------------------------------------------------\n");
+        printf("| %-15s | %-45s | %-15s | %-15s | %-15s |\n", "Title", "Description", "Duration", "Language", "Subtitle");
+        printf("-------------------------------------------------------------------------------------------------------------------------\n");
         while ((row = mysql_fetch_row(res)))
         {
-            printf("| %-15s | %-15s | %-15s | %-15s | %-15s | %-15s |\n", row[1], row[2], row[3], row[4], row[5]);
+            printf("| %-15s | %-45s | %-15s | %-15s | %-15s |\n", row[1], row[2], row[3], row[4], row[5]);
+            printf("-------------------------------------------------------------------------------------------------------------------------\n");
         }
-        printf("-------------------------------------------------------------------------------------------------------------\n");
+
     }
     else
     {
@@ -547,7 +981,8 @@ void ShowMovieList() {
     cin >> choose;
     if (choose == 'm' || choose == 'M')
     {
-        main();
+        system("cls");
+        adminMenu();
     }
     else
     {
@@ -758,7 +1193,8 @@ void AddNewShowTime() {
 
 
 
-void ShowShowtimeList() {
+void ShowShowtimeList()
+{
     system("cls");
 
     char choose;
@@ -797,9 +1233,18 @@ void ShowShowtimeList() {
 
 
 
-
-void RegisterUser() {
-
+//void toggleEcho(bool enableEcho) {
+//    struct termios tty;
+//    tcgetattr(STDIN_FILENO, &tty);
+//    if (!enableEcho)
+//        tty.c_lflag &= ~ECHO;
+//    else
+//        tty.c_lflag |= ECHO;
+//
+//    tcsetattr(STDIN_FILENO, TCSANOW, &tty);
+//}
+void RegisterUser()
+{
     // Initial Load
     system("cls");
     // Initial Load End
@@ -815,45 +1260,72 @@ void RegisterUser() {
     cin.ignore(1, '\n');
     cout << "Enter Email: ";
     getline(cin, email);
-    cout << "Enter Name: ";
-    getline(cin, name);
-    cout << "Enter Password: ";
-    getline(cin, password);
-
-    string insert_query = "insert into user (name, email, password, user_role) values ('"+name+"','"+email+"','"+password+"','user')";
-
-    const char* q = insert_query.c_str(); // c_str converts string to constant char and this is required
+    string select_query = "SELECT name, email, password, user_role FROM user WHERE email='"+email+"'";
+    const char* q = select_query.c_str(); // c_str converts string to constant char and this is required
 
     qstate = mysql_query(conn, q);
-
-    if (!qstate)
+      if (!qstate)
     {
-        cout << endl << "User successfully added in database." << endl;
+        res = mysql_store_result(conn);
+
+        row = mysql_fetch_row(res);
+        if (row != NULL)
+        {
+            cout<<"User Already Exist. Please login."<<endl;
+            system("pause");
+            system("cls");
+             main();
+        }
+        else
+        {
+            cout << "Enter Name: ";
+            getline(cin, name);
+            cout << "Enter Password: ";
+            getline(cin, password);
+
+            string insert_query = "insert into user (name, email, password, user_role) values ('"+name+"','"+email+"','"+password+"','2')";
+
+            q = insert_query.c_str(); // c_str converts string to constant char and this is required
+
+            qstate = mysql_query(conn, q);
+
+            if (!qstate)
+            {
+                cout << endl << "User successfully added in database." << endl;
+            }
+            else
+            {
+                cout << "Query Execution Problem!" << mysql_errno(conn) << endl;
+            }
+
+            // Exit Code
+            cout << "Press 'm' to Menu and 'a' to Create New User Again Or Any Other key to exit: ";
+            cin >> choose;
+            if (choose == 'm' || choose == 'M')
+            {
+                system("cls");
+                main();
+            }
+            else if (choose == 'a' || choose == 'A')
+            {
+                system("cls");
+                RegisterUser();
+            }
+            else
+            {
+                exit(0);
+            }
+                }
     }
     else
     {
         cout << "Query Execution Problem!" << mysql_errno(conn) << endl;
     }
 
-    // Exit Code
-    cout << "Press 'm' to Menu and 'a' to Create New User Again Or Any Other key to exit: ";
-    cin >> choose;
-    if (choose == 'm' || choose == 'M')
-    {
-        main();
-    }
-    else if (choose == 'a' || choose == 'A')
-    {
-        RegisterUser();
-    }
-    else
-    {
-        exit(0);
-    }
 }
 
-void LoginUser() {
-
+void LoginUser()
+{
     // Initial Load
     system("cls");
     // Initial Load End
@@ -873,7 +1345,7 @@ void LoginUser() {
     getline(cin, password);
 
 
-    string select_query = "SELECT name, email, password, user_role FROM user WHERE email='"+email+"'";
+    string select_query = "SELECT id, name, email, password, user_role FROM user WHERE email='"+email+"'";
 
     const char* q = select_query.c_str(); // c_str converts string to constant char and this is required
 
@@ -884,9 +1356,20 @@ void LoginUser() {
         res = mysql_store_result(conn);
 
         row = mysql_fetch_row(res);
-        if (row[2] == password)
+        if (row[3] == password)
         {
             cout << endl << "Correct Password. User Logged In" << endl << endl;
+            stringstream SS(row[0]);
+            SS >> user_id;
+            int result = strcmp(row[4], "1");
+           if(result == 0){
+            system("cls");
+            adminMenu();
+           }
+           else {
+            system("cls");
+            customerMenu();
+           }
         }
         else
         {
