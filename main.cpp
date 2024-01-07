@@ -537,8 +537,6 @@ void BookTicket(){
 
         int found=0;
         for(int i = 0; i < ticketsBooked.size(); i++){
-            cout << "Already Booked seats: " << ticketsBooked.at(i) <<endl;
-             //if(ticketsBooked[i] == seatNum){
              if(ticketsBooked.at(i) == seatNum){
                 cout << "This seat is already booked. Please select a different seat." << endl;
                 found=1;
