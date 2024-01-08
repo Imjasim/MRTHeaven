@@ -1225,32 +1225,14 @@ void ShowShowtimeList()
     }
 }
 
-inline uint32_t left_rotate(uint32_t value, uint32_t shift) {
-    return (value << shift) | (value >> (32 - shift));
-}
+#define LEFTROTATE(x, c) (((x) << (c)) | ((x) >> (32 - (c))))
+const uint32_t k[] = { 0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476 };
 
-// MD5 transformation function for a 64-byte block
 void md5_transform(uint32_t state[4], const uint8_t block[64]) {
-    static const uint32_t k[] = {
-        0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
-        0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
-        0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
-        0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
-        0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
-        0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
-        0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
-        0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
-    };
-
-    uint32_t a = state[0], b = state[1], c = state[2], d = state[3];
-    uint32_t m[16];
-
-    // Convert the block (64 bytes) to 16 32-bit words
+    uint32_t a = state[0], b = state[1], c = state[2], d = state[3], m[16];
     for (int i = 0; i < 16; ++i) {
-        m[i] = (block[i * 4 + 0] << 24) |
-               (block[i * 4 + 1] << 16) |
-               (block[i * 4 + 2] << 8) |
-               (block[i * 4 + 3]);
+        m[i] = (block[i * 4 + 0] << 0) | (block[i * 4 + 1] << 8) |
+               (block[i * 4 + 2] << 16) | (block[i * 4 + 3] << 24);
     }
 
     for (int i = 0; i < 64; ++i) {
@@ -1272,7 +1254,7 @@ void md5_transform(uint32_t state[4], const uint8_t block[64]) {
         uint32_t temp = d;
         d = c;
         c = b;
-        b = b + left_rotate((a + f + k[i] + m[g]), 7);
+        b = b + LEFTROTATE((a + f + k[i] + m[g]), 7);
         a = temp;
     }
 
@@ -1282,35 +1264,46 @@ void md5_transform(uint32_t state[4], const uint8_t block[64]) {
     state[3] += d;
 }
 
-// MD5 algorithm main function
 string md5(const string& message) {
     uint32_t state[4] = { 0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476 };
-    uint32_t message_length = message.length();
-    uint32_t bit_length = message_length * 8;
+    uint32_t message_length = message.length() * 8;
+    uint32_t bit_length = message.length() * 8;
 
-    string modifiedMessage = message;  // Make a copy of the input message
+    uint8_t padding[64] = {0x80};
+    uint8_t data[64] = {0};
 
-    // Pre-processing: adding a single '1' bit, padding with zeros
-    modifiedMessage += static_cast<char>(0x80); // Append a '1' bit
+    // Append the bit '1' to the message
+    message.copy(reinterpret_cast<char*>(data), message.length());
+    data[message.length()] = 0x80;
 
-    while ((modifiedMessage.length() % 64) != 56) {
-        modifiedMessage += static_cast<char>(0x00); // Padding with zeros
+    // Append 0 ≤ k < 512 bits '0', such that the resulting message length (in bits) is 448 ≡ −64 mod 512
+    if (message_length % 512 < 448) {
+        message_length = 448 - message_length % 512;
+    } else {
+        message_length = 512 - (message_length % 512 - 448);
     }
 
-    // Append the length of the message in bits as a 64-bit number
+    for (uint32_t i = 0; i < message_length / 8; ++i) {
+        data[message.length() + 1 + i] = 0x00;
+    }
+
+    // Append length of message (before pre-processing), in bits, as a 64-bit big-endian integer
     for (int i = 0; i < 8; ++i) {
-        modifiedMessage += static_cast<char>((bit_length >> (i * 8)) & 0xFF);
+        data[56 + i] = (bit_length >> (i * 8)) & 0xFF;
     }
 
-    uint32_t a0 = state[0], b0 = state[1], c0 = state[2], d0 = state[3];
-    // MD5 algorithm - rest of the code here...
+    // Process the message in successive 512-bit chunks
+    for (uint32_t i = 0; i < (message.length() + message_length / 8 + 8) / 64; ++i) {
+        uint32_t offset = i * 64;
+        md5_transform(state, &data[offset]);
+    }
 
-    stringstream ss; // Declaration of stringstream ss
+    stringstream ss;
     for (uint32_t s : state) {
         ss << hex << setw(8) << setfill('0') << s;
     }
 
-    return ss.str(); // Return the hashed message
+    return ss.str();
 }
 
 void RegisterUser()
@@ -1414,6 +1407,7 @@ void LoginUser()
     cout << "Enter Password: ";
     getline(cin, password);
     password = md5(password);
+    cout<<password<<endl;
 
     string select_query = "SELECT id, name, email, password, user_role FROM user WHERE email='"+email+"'";
 
