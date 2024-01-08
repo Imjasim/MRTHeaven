@@ -78,6 +78,7 @@ void loginMenu();
 void customerMenu ();
 void adminMenu();
 void BookTicket();
+void AddAdmin();
 
 
 int main()
@@ -166,7 +167,7 @@ Welcome();
         fin += num;
         cout << fin << ". Movie Show Time" << endl;
         fin += num;
-        cout << fin << ". Add New User" << endl;
+        cout << fin << ". Add New Admin" << endl;
         fin += num;
         cout << fin << ". Exit" << endl;
         cout << "Choose One: ";
@@ -194,7 +195,7 @@ Welcome();
         ShowShowtimeList();
         break;
     case 7:
-        RegisterUser();
+        AddAdmin();
         break;
     case 8:
         ExitProgram:
@@ -1347,6 +1348,85 @@ void RegisterUser()
             getline(cin, password);
             password = md5(password);
             string insert_query = "insert into user (name, email, password, user_role) values ('"+name+"','"+email+"','"+password+"','2')";
+
+            q = insert_query.c_str(); // c_str converts string to constant char and this is required
+
+            qstate = mysql_query(conn, q);
+
+            if (!qstate)
+            {
+                cout << endl << "User successfully added in database." << endl;
+            }
+            else
+            {
+                cout << "Query Execution Problem!" << mysql_errno(conn) << endl;
+            }
+
+            // Exit Code
+            cout << "Press 'm' to Menu and 'a' to Create New User Again Or Any Other key to exit: ";
+            cin >> choose;
+            if (choose == 'm' || choose == 'M')
+            {
+                system("cls");
+                main();
+            }
+            else if (choose == 'a' || choose == 'A')
+            {
+                system("cls");
+                RegisterUser();
+            }
+            else
+            {
+                exit(0);
+            }
+                }
+    }
+    else
+    {
+        cout << "Query Execution Problem!" << mysql_errno(conn) << endl;
+    }
+
+}
+void AddAdmin(){
+       // Initial Load
+    system("cls");
+    // Initial Load End
+
+    // Variables
+    string name = "";
+    string email = "";
+    string password = "";
+    char choose;
+    // Variables End
+
+    Welcome();
+    cin.ignore(1, '\n');
+    cout << "Enter Email: ";
+    getline(cin, email);
+    string select_query = "SELECT name, email, password, user_role FROM user WHERE email='"+email+"'";
+    const char* q = select_query.c_str(); // c_str converts string to constant char and this is required
+
+    qstate = mysql_query(conn, q);
+      if (!qstate)
+    {
+        res = mysql_store_result(conn);
+
+        row = mysql_fetch_row(res);
+        if (row != NULL)
+        {
+            cout<<"User Already Exist. Please login."<<endl;
+            system("pause");
+            system("cls");
+             main();
+        }
+        else
+        {
+            cout << "Enter Name: ";
+            getline(cin, name);
+            cout << "Enter Password: ";
+            getline(cin, password);
+            password = md5(password);
+            string insert_query = "insert into user (name, email, password, user_role) values ('"+name+"','"+email+"','"+password+"','1')";
 
             q = insert_query.c_str(); // c_str converts string to constant char and this is required
 
