@@ -64,6 +64,12 @@ void Welcome() {
 }
 
 
+struct checkedTicket {
+    string showTimeId;
+    std::vector<int> ticketsBooked;
+};
+
+typedef struct checkedTicket Struct;
 
 // Functions
 void AddNewMovie();
@@ -79,6 +85,7 @@ void customerMenu ();
 void adminMenu();
 void BookTicket();
 void AddAdmin();
+Struct CheckSeat(int);
 
 
 int main()
@@ -247,7 +254,7 @@ Welcome();
         /*ShowMyTicket();*/
         break;
     case 3:
-        /*CheckSeat();*/
+        CheckSeat(0);
         break;
     case 4:
         ExitProgram:
@@ -272,13 +279,12 @@ Welcome();
     }
 }
 
-void BookTicket(){
-    system("cls");
-
+Struct CheckSeat(int returnFlag) {
     // Variables
     char choose;
+    Struct ticketInfo;
     string input;
-    int itemId, showid, numTicket, seatNum;
+    int itemId, showid;
     bool HaveException = false;
     std::vector<int> ticketsBooked;
     //int ticketsBooked[40];
@@ -288,6 +294,9 @@ void BookTicket(){
                    {0, 0, 0, 0, 0, 0, 0, 0, 0},
                    {0, 0, 0, 0, 0, 0, 0, 0, 0},
                    {0, 0, 0, 0, 0, 0, 0, 0, 0},};
+
+
+    system("cls");
 
     Welcome();
     qstate = mysql_query(conn, "select * from movie");
@@ -374,6 +383,8 @@ void BookTicket(){
     cout << showTimeId;
     cout << endl;
 
+    ticketInfo.showTimeId = showTimeId;
+
     string findbyid_query2 = "select seat_num FROM booking where showtime_id = '"+showTimeId+"'";
     const char* qi2 = findbyid_query2.c_str();
     qstate = mysql_query(conn, qi2);
@@ -452,11 +463,53 @@ void BookTicket(){
         }
         printf("-------------------------------------------------------------------------------------------------------------\n");
 
+        ticketInfo.ticketsBooked = ticketsBooked;
+        if (returnFlag == 1){
+            return ticketInfo;
+        }
+        else {
+            goto ExitMenu;
+        }
     }
     else
     {
         cout << "Query Execution Problem!" << mysql_errno(conn) << endl;
     }
+    goto ExitMenu;
+
+    // Exit Code
+    ExitMenu:
+    cout << "Press 'm' to Menu, 'c' to check ticket again and any other key to Exit: ";
+    cin >> choose;
+    if (choose == 'm' || choose == 'M')
+    {
+       system("cls");
+        customerMenu();
+    }
+    else if (choose == 'c' || choose == 'C')
+    {
+        CheckSeat(0);
+    }
+    else
+    {
+        system("cls");
+        exit(0);
+    }
+}
+
+void BookTicket(){
+    system("cls");
+
+    Struct ticketInfo;
+    char choose;
+    int numTicket, seatNum;
+    bool HaveException = false;
+    std::vector<int> ticketsBooked;
+    string showTimeId;
+
+    ticketInfo = CheckSeat(1);
+    showTimeId = ticketInfo.showTimeId;
+    ticketsBooked = ticketInfo.ticketsBooked;
 
     try
     {
@@ -495,8 +548,6 @@ void BookTicket(){
         char inputRowSeatNum, inputColumnSeatNum;
         int splitSeatNum2;
         string tempSeatNum, inputSeatNum;
-        cout << "Inside while."<< numSeatChosed << endl;
-        cout << "numTicket."<< numTicket << endl;
         try
         {
             cout << endl;
@@ -507,7 +558,6 @@ void BookTicket(){
             vector<char> c(inputSeatNum.begin(), inputSeatNum.end());
 
             backSeatNum2 = c.at(1) - '0';
-            cout << "backSeatNum2."<< backSeatNum2 << endl;
 
 
             switch (c.at(0)) {
@@ -530,7 +580,6 @@ void BookTicket(){
 
             string SS = std::to_string(frontSeatNum2) + std::to_string(backSeatNum2);
             seatNum = stoi(SS);
-            cout << "seatNum."<< seatNum << endl;
 
         int found=0;
         for(int i = 0; i < ticketsBooked.size(); i++){
@@ -579,7 +628,7 @@ void BookTicket(){
     }
 
     ExitMenu:
-    cout << "Press 'm' to Menu, 'e' to another ticket and any other key to Exit: ";
+    cout << "Press 'm' to Menu, 'e' to book another ticket and any other key to Exit: ";
     cin >> choose;
     if (choose == 'm' || choose == 'M')
     {
@@ -642,7 +691,10 @@ void AddNewMovie() {
         cout << "Query Execution Problem!" << mysql_errno(conn) << endl;
     }
 
+    goto ExitMenu;
+
     // Exit Code
+    ExitMenu:
     cout << "Press 'm' to Menu and 'a' to Insert Again Or Any Other key to exit: ";
     cin >> choose;
     if (choose == 'm' || choose == 'M')
@@ -970,9 +1022,10 @@ void ShowMovieList() {
     {
         cout << "Query Execution Problem!" << mysql_errno(conn) << endl;
     }
+    goto ExitMenu;
 
     ExitMenu:
-    cout << "Press 'm' to Menu any other key to Exit: ";
+    cout << "Press 'm' to Menu or any other key to Exit: ";
     cin >> choose;
     if (choose == 'm' || choose == 'M')
     {
@@ -1170,13 +1223,13 @@ void AddNewShowTime() {
     }
 
     ExitMenu:
-    cout << "Press 'm' to Menu, 'e' to add another showtime and any other key to Exit: ";
+    cout << "Press 'm' to Menu, 'a' to add another showtime and any other key to Exit: ";
     cin >> choose;
     if (choose == 'm' || choose == 'M')
     {
-        main();
+        adminMenu();
     }
-    else if (choose == 'e' || choose == 'E')
+    else if (choose == 'a' || choose == 'A')
     {
         AddNewShowTime();
     }
@@ -1184,6 +1237,7 @@ void AddNewShowTime() {
     {
         exit(0);
     }
+
 }
 
 
@@ -1212,13 +1266,14 @@ void ShowShowtimeList()
     {
         cout << "Query Execution Problem!" << mysql_errno(conn) << endl;
     }
+    goto ExitMenu;
 
     ExitMenu:
     cout << "Press 'm' to Menu any other key to Exit: ";
     cin >> choose;
     if (choose == 'm' || choose == 'M')
     {
-        main();
+        adminMenu();
     }
     else
     {
