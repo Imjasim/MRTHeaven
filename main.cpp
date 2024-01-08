@@ -16,7 +16,7 @@
 using namespace std;
 
 // Global Variable Movie Ticket Booking System in C++ with MySQL
-int qstate, qstate2;
+int qstate, qstate2,qstate3;
 MYSQL* conn;
 MYSQL_ROW row, row2;
 MYSQL_RES* res;
@@ -79,6 +79,7 @@ void customerMenu ();
 void adminMenu();
 void BookTicket();
 void AddAdmin();
+void ShowMyTicket();
 
 
 int main()
@@ -244,7 +245,7 @@ Welcome();
         BookTicket();
         break;
     case 2:
-        /*ShowMyTicket();*/
+        ShowMyTicket();
         break;
     case 3:
         /*CheckSeat();*/
@@ -271,7 +272,48 @@ Welcome();
         break;
     }
 }
+void ShowMyTicket(){
+      system("cls");
+    char choose ;
+    string findbyid_query  ="SELECT c.title,d.time,b.date,a.seat_num FROM booking a INNER JOIN showtime b ON a.showtime_id = b.id Inner JOIN movie c ON b.movie_id = c.id INNER JOIN time_slots d ON b.slot_id = d.id WHERE a.user_id = '"+to_string(user_id)+"'";
 
+    //string findbyid_query = "select a.id, b.title, a.date, c.time FROM showtime a INNER JOIN movie b ON a.movie_id = b.id  INNER JOIN time_slots c ON a.slot_id = c.id where b.id = '"+movieid+"'";
+    const char* qi = findbyid_query.c_str();
+    qstate2 = mysql_query(conn, qi);
+
+    Welcome();
+
+
+    if (!qstate)
+    {
+        res = mysql_store_result(conn);
+        printf("-------------------------------------------------------------------------------------------------------\n");
+        printf("| %-15s | %-15s | %-15s | %-15s |\n", "Title", "Time", "Date", "Seat Num");
+        printf("-------------------------------------------------------------------------------------------------------\n");
+        while ((row = mysql_fetch_row(res)))
+        {
+            printf("| %-15s | %-45s | %-15s | %-15s |\n", row[0], row[1], row[2], row[3]);
+            printf("-------------------------------------------------------------------------------------------------------\n");
+        }
+
+    }
+    else
+    {
+        cout << "Query Execution Problem!" << mysql_errno(conn) << endl;
+    }
+    cout << "Press 'm' to Menu Or Any Other key to exit: ";
+    cin >> choose;
+    if (choose == 'm' || choose == 'M')
+    {
+        system("cls");
+        customerMenu();
+    } else
+    {
+        exit(0);
+    }
+
+
+}
 void BookTicket(){
     system("cls");
 
@@ -294,13 +336,13 @@ void BookTicket(){
     if (!qstate)
     {
         res = mysql_store_result(conn);
-        printf("-------------------------------------------------------------------------------------------------------------------------\n");
+        printf("--------------------------------------------------------------------------------------------------------------------------------------\n");
         printf("| %-10s | %-15s | %-45s | %-15s | %-15s | %-15s |\n", "Id", "Title", "Description", "Duration", "Language", "Subtitle");
-        printf("-------------------------------------------------------------------------------------------------------------------------\n");
+        printf("--------------------------------------------------------------------------------------------------------------------------------------\n");
         while ((row = mysql_fetch_row(res)))
         {
             printf("| %-10s | %-15s | %-45s | %-15s | %-15s | %-15s |\n", row[0], row[1], row[2], row[3], row[4], row[5]);
-            printf("-------------------------------------------------------------------------------------------------------------------------\n");
+            printf("--------------------------------------------------------------------------------------------------------------------------------------\n");
         }
 
     }
@@ -1174,10 +1216,12 @@ void AddNewShowTime() {
     cin >> choose;
     if (choose == 'm' || choose == 'M')
     {
-        main();
+        system("cls");
+        adminMenu();
     }
     else if (choose == 'e' || choose == 'E')
     {
+        system("cls");
         AddNewShowTime();
     }
     else
@@ -1218,7 +1262,7 @@ void ShowShowtimeList()
     cin >> choose;
     if (choose == 'm' || choose == 'M')
     {
-        main();
+       adminMenu();
     }
     else
     {
@@ -1447,7 +1491,7 @@ void AddAdmin(){
             if (choose == 'm' || choose == 'M')
             {
                 system("cls");
-                main();
+                adminMenu();
             }
             else if (choose == 'a' || choose == 'A')
             {
