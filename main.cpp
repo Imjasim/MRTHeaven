@@ -321,6 +321,11 @@ void ShowMyTicket(){
 
 
 }
+int payment() {
+
+
+    return 0 ;
+}
 Struct CheckSeat(int returnFlag) {
     // Variables
     char choose;
@@ -548,7 +553,7 @@ void BookTicket(){
     bool HaveException = false;
     std::vector<int> ticketsBooked;
     string showTimeId;
-
+    int i = payment();
     ticketInfo = CheckSeat(1);
     showTimeId = ticketInfo.showTimeId;
     ticketsBooked = ticketInfo.ticketsBooked;
@@ -556,13 +561,53 @@ void BookTicket(){
     try
     {
         cout << endl;
-        cout << "Choose number of tickets to book: ";
-        cin >> numTicket;
-        cout << endl;
+         system("cls");
+    char choose ;
+    string query  ="SELECT types,price FROM ticket";
+    const char* qi = query.c_str();
+    qstate2 = mysql_query(conn, qi);
+    int adultTicket= 0 ;
+    int childTicket= 0 ;
+    int studentsTicket= 0 ;
+    int seniorCitizenTicket= 0 ;
+    int skaTicket= 0 ;
+
+    Welcome();
+
+
+    if (!qstate)
+    {
+        res = mysql_store_result(conn);
+        printf("-----------------------------------------------\n");
+        printf("| %-25s | %-15s |\n", "Type", "Price");
+        printf("-----------------------------------------------\n");
+        while ((row = mysql_fetch_row(res)))
+        {
+            printf("| %-25s | %-15s |\n", row[0], row[1]);
+            printf("-----------------------------------------------\n");
+        }
+        cout<<"Please input the number of tickets for Adults"<<endl;
+        cin>>adultTicket;
+        cout<<"Please input the number of tickets for Children"<<endl;
+        cin>>childTicket;
+        cout<<"Please input the number of tickets for Student"<<endl;
+        cin>>studentsTicket;
+        cout<<"Please input the number of tickets for Senior Citizens"<<endl;
+        cin>>seniorCitizenTicket;
+        cout<<"Please input the number of tickets for Special Kids/Adults"<<endl;
+        cin>>skaTicket;
+    }
+    else
+    {
+        cout << "Query Execution Problem!" << mysql_errno(conn) << endl;
+    }
+     numTicket= adultTicket+childTicket+studentsTicket+seniorCitizenTicket+skaTicket;
 
         if(numTicket == 0)
         {
              throw ("Please Enter a valid NUMBER.");
+             system("cls");
+             BookTicket();
         }
         else if(numTicket > 10)
         {
