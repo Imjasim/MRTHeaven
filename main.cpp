@@ -13,6 +13,7 @@
 #include <sstream>
 #include <iomanip>
 #include <cstring>
+#include <map>
 using namespace std;
 
 // Global Variable Movie Ticket Booking System in C++ with MySQL
@@ -282,7 +283,7 @@ Welcome();
 void ShowMyTicket(){
       system("cls");
     char choose ;
-    string findbyid_query  ="SELECT c.title,d.time,b.date,a.seat_num FROM booking a INNER JOIN showtime b ON a.showtime_id = b.id Inner JOIN movie c ON b.movie_id = c.id INNER JOIN time_slots d ON b.slot_id = d.id WHERE a.user_id = '"+to_string(user_id)+"'";
+    string findbyid_query  ="SELECT c.title,d.time,b.date,a.seat_num, a.payment_type FROM booking a INNER JOIN showtime b ON a.showtime_id = b.id Inner JOIN movie c ON b.movie_id = c.id INNER JOIN time_slots d ON b.slot_id = d.id WHERE a.user_id = '"+to_string(user_id)+"'";
 
     //string findbyid_query = "select a.id, b.title, a.date, c.time FROM showtime a INNER JOIN movie b ON a.movie_id = b.id  INNER JOIN time_slots c ON a.slot_id = c.id where b.id = '"+movieid+"'";
     const char* qi = findbyid_query.c_str();
@@ -294,13 +295,41 @@ void ShowMyTicket(){
     if (!qstate)
     {
         res = mysql_store_result(conn);
-        printf("-------------------------------------------------------------------------\n");
-        printf("| %-15s | %-15s | %-15s | %-15s |\n", "Title", "Time", "Date", "Seat Num");
-        printf("-------------------------------------------------------------------------\n");
+        printf("-------------------------------------------------------------------------------------------\n");
+        printf("| %-15s | %-15s | %-15s | %-15s | %-15s |\n", "Title", "Time", "Date", "Seat Num", "Payment type");
+        printf("-------------------------------------------------------------------------------------------\n");
         while ((row = mysql_fetch_row(res)))
         {
-            printf("| %-15s | %-15s | %-15s | %-15s |\n", row[0], row[1], row[2], row[3]);
-            printf("-------------------------------------------------------------------------\n");
+            stringstream SS(row[3]);
+                int seat;
+                SS >> seat;
+
+                int backSeatNum = (seat % 10);
+                int splitSeatNum = seat/10;
+                int frontSeatNum = (splitSeatNum%10);
+                string seatNum2 = "";
+
+                switch (frontSeatNum) {
+                  case 1:
+                    seatNum2 = 'A';
+                    break;
+                  case 2:
+                    seatNum2 = 'B';
+                    break;
+                  case 3:
+                    seatNum2 = 'C';
+                    break;
+                  case 4:
+                    seatNum2 = 'D';
+                    break;
+                  case 5:
+                    seatNum2 = 'E';
+                    break;
+                }
+                seatNum2.append(std::to_string(backSeatNum));
+
+            printf("| %-15s | %-15s | %-15s | %-15s | %-15s |\n", row[0], row[1], row[2], seatNum2.c_str(), row[4]);
+        printf("-------------------------------------------------------------------------------------------\n");
         }
 
     }
@@ -442,9 +471,6 @@ Struct CheckSeat(int returnFlag) {
     {
         res = mysql_store_result(conn);
 
-        cout << "res: ";
-        cout << res;
-        cout << endl;
         row = mysql_fetch_row(res);
         if (row != NULL)
         {
@@ -552,25 +578,27 @@ void BookTicket(){
     int numTicket, seatNum;
     bool HaveException = false;
     std::vector<int> ticketsBooked;
+    map<string, float> selectedTicketInfo;
     string showTimeId;
     int i = payment();
     ticketInfo = CheckSeat(1);
     showTimeId = ticketInfo.showTimeId;
     ticketsBooked = ticketInfo.ticketsBooked;
-
-    try
-    {
-        cout << endl;
-         system("cls");
-    char choose ;
-    string query  ="SELECT types,price FROM ticket";
-    const char* qi = query.c_str();
-    qstate2 = mysql_query(conn, qi);
     int adultTicket= 0 ;
     int childTicket= 0 ;
     int studentsTicket= 0 ;
     int seniorCitizenTicket= 0 ;
     int skaTicket= 0 ;
+    int preferredPayment= 1 ;
+    string preferredPaymentString = "";
+
+    try
+    {
+        cout << endl;
+    char choose ;
+    string query  ="SELECT types,price FROM ticket";
+    const char* qi = query.c_str();
+    qstate2 = mysql_query(conn, qi);
 
     Welcome();
 
@@ -583,24 +611,29 @@ void BookTicket(){
         printf("-----------------------------------------------\n");
         while ((row = mysql_fetch_row(res)))
         {
+            string type = row[0];
+            string tempPrice = row[1];
+            double tempPrice2 = stod(tempPrice);
+            selectedTicketInfo[type] = tempPrice2;
             printf("| %-25s | %-15s |\n", row[0], row[1]);
             printf("-----------------------------------------------\n");
         }
-        cout<<"Please input the number of tickets for Adults"<<endl;
+        cout<<"Please input the number of tickets for Adults:"<<endl;
         cin>>adultTicket;
-        cout<<"Please input the number of tickets for Children"<<endl;
+        cout<<"Please input the number of tickets for Children:"<<endl;
         cin>>childTicket;
-        cout<<"Please input the number of tickets for Student"<<endl;
+        cout<<"Please input the number of tickets for Student:"<<endl;
         cin>>studentsTicket;
-        cout<<"Please input the number of tickets for Senior Citizens"<<endl;
+        cout<<"Please input the number of tickets for Senior Citizens:"<<endl;
         cin>>seniorCitizenTicket;
-        cout<<"Please input the number of tickets for Special Kids/Adults"<<endl;
+        cout<<"Please input the number of tickets for Special Kids/Adults:"<<endl;
         cin>>skaTicket;
     }
     else
     {
         cout << "Query Execution Problem!" << mysql_errno(conn) << endl;
     }
+
      numTicket= adultTicket+childTicket+studentsTicket+seniorCitizenTicket+skaTicket;
 
         if(numTicket == 0)
@@ -649,18 +682,23 @@ void BookTicket(){
 
             switch (c.at(0)) {
                   case 'A':
+                  case 'a':
                     frontSeatNum2 = 1;
                     break;
                   case 'B':
+                  case 'b':
                     frontSeatNum2 = 2;
                     break;
                   case 'C':
+                  case 'c':
                     frontSeatNum2 = 3;
                     break;
                   case 'D':
+                  case 'd':
                     frontSeatNum2 = 4;
                     break;
                   case 'E':
+                  case 'e':
                     frontSeatNum2 = 5;
                     break;
                 }
@@ -694,11 +732,54 @@ void BookTicket(){
 
     }
 
+    string findbyid_query2 = "select b.title, a.date, c.time, d.hall_name from showtime a INNER JOIN movie b ON a.movie_id = b.id INNER JOIN time_slots c ON a.slot_id = c.id INNER JOIN hall d ON a.hall_id = d.id where a.id= '"+showTimeId+"'";
+    const char* qi2 = findbyid_query2.c_str();
+    qstate2 = mysql_query(conn, qi2);
+
+
+    char* movieTitle;
+    char* movieDate;
+    char* movieTime;
+    char* movieHall;
+      if (!qstate2)
+    {
+        res = mysql_store_result(conn);
+
+        row = mysql_fetch_row(res);
+
+        movieTitle = row[0];
+        movieDate = row[1];
+        movieTime = row[2];
+        movieHall = row[3];
+    }
+
+    cout<<"Please select your preferred payment type (select the number): "<<endl;
+    cout<<"1. Cash"<<endl;
+    cout<<"2. Credit Card"<<endl;
+    cout<<"3. Online Banking"<<endl;
+    cin>>preferredPayment;
+
+    if(preferredPayment)
+
+    switch (preferredPayment)
+    {
+    case 1:
+        preferredPaymentString = "Cash";
+        break;
+    case 2:
+        preferredPaymentString = "Credit Card";
+        break;
+    case 3:
+        preferredPaymentString = "Online Banking";
+        break;
+    default:
+        preferredPaymentString = "Online Banking";
+        break;
+    }
 
     for(int i = 0; i < movie_seats_chosen.size(); i++)
     {
-
-        string insert_query = "insert into booking (user_id, showtime_id, seat_num) values ('"+std::to_string(user_id)+"','"+showTimeId+"','"+std::to_string(movie_seats_chosen.at(i))+"')";
+        string insert_query = "insert into booking (user_id, showtime_id, seat_num, payment_type) values ('"+std::to_string(user_id)+"','"+showTimeId+"','"+std::to_string(movie_seats_chosen.at(i))+"', '"+preferredPaymentString+"')";
 
         const char* q = insert_query.c_str(); // c_str converts string to constant char and this is required
 
@@ -713,6 +794,64 @@ void BookTicket(){
             cout << "Query Execution Problem!" << mysql_errno(conn) << endl;
         }
     }
+    cout << "********************************************" << endl;
+    cout << "*                                          *" << endl;
+    cout << "*              INVOICE                     *" << endl;
+    cout << "*                                          *" << endl;
+    cout << "********************************************" << endl;
+    printf("-----------------------------------------------\n");
+    printf("| %-25s | %-15s |\n", "Movie", movieTitle);
+    printf("-----------------------------------------------\n");
+    printf("| %-25s | %-15s |\n", "Show Date", movieDate);
+    printf("-----------------------------------------------\n");
+    printf("| %-25s | %-15s |\n", "Showtime", movieTime);
+    printf("-----------------------------------------------\n");
+    printf("| %-25s | %-15s |\n", "Hall", movieHall);
+    printf("-----------------------------------------------\n");
+    printf("-----------------------------------------------\n");
+    printf("| %-25s | %-15s |\n", "Type", "Price");
+    printf("-----------------------------------------------\n");
+
+    float totalPrice = 0;
+    if (adultTicket >0)
+    {
+        float adultTotalPrice = adultTicket * selectedTicketInfo["Adult"];
+        printf("| %-25s | %-15.2f |\n", "Adult", adultTotalPrice);
+        printf("-----------------------------------------------\n");
+        totalPrice += adultTotalPrice;
+    }
+    if (childTicket >0)
+    {
+        float childTotalPrice = childTicket * selectedTicketInfo["Children"];
+        printf("| %-25s | %-15.2f |\n", "Children", childTotalPrice);
+        printf("-----------------------------------------------\n");
+        totalPrice += childTotalPrice;
+    }
+    if (studentsTicket >0)
+    {
+        float studentTotalPrice = studentsTicket * selectedTicketInfo["Student"];
+        printf("| %-25s | %-15.2f |\n", "Student", studentTotalPrice);
+        printf("-----------------------------------------------\n");
+        totalPrice += studentTotalPrice;
+    }
+    if (seniorCitizenTicket >0)
+    {
+        float seniorCitizenTotalPrice = seniorCitizenTicket * selectedTicketInfo["Senior Citizens"];
+        printf("| %-25s | %-15.2f |\n", "Senior Citizens", seniorCitizenTotalPrice);
+        printf("-----------------------------------------------\n");
+        totalPrice += seniorCitizenTotalPrice;
+    }
+    if (skaTicket >0)
+    {
+        float skaTotalPrice = skaTicket * selectedTicketInfo["Special Kids/Adults"];
+        printf("| %-25s | %-15.2f |\n", "Special Kids/Adults", skaTotalPrice);
+        printf("-----------------------------------------------\n");
+        totalPrice += skaTotalPrice;
+    }
+
+        printf("-----------------------------------------------\n");
+        printf("| %-25s | %-15.2f |\n", "Total Price to pay", totalPrice);
+        printf("-----------------------------------------------\n");
 
     ExitMenu:
     cout << "Press 'm' to Menu, 'e' to book another ticket and any other key to Exit: ";
