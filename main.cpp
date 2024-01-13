@@ -475,7 +475,6 @@ Struct CheckSeat(int returnFlag) {
         if (row != NULL)
         {
                 int j =0;
-                printf("| %-10s | \n", row[0]);
                 stringstream SS(row[0]);
                 int booked_seat;
                 SS >> booked_seat;
@@ -1130,16 +1129,16 @@ void DeleteMovie() {
     if (!qstate)
     {
         res = mysql_store_result(conn);
-        printf("--------------------------------------------------\n");
+        printf("------------------------------------------------------------------------------------------\n");
         printf("| %-10s | %-15s | %-15s |\n", "Movie Id", "Title", "Description");
-        printf("--------------------------------------------------\n");
+        printf("------------------------------------------------------------------------------------------\n");
         while ((row = mysql_fetch_row(res)))
         {
             printf("| %-10s | %-15s | %-15s |\n", row[0], row[1], row[2]);
             items[indexForId] = row[0];
             indexForId++;
         }
-        printf("--------------------------------------------------\n");
+        printf("------------------------------------------------------------------------------------------\n");
     }
     else
     {
@@ -1501,6 +1500,7 @@ void ShowShowtimeList()
     cin >> choose;
     if (choose == 'm' || choose == 'M')
     {
+        system("cls");
        adminMenu();
 
     }
